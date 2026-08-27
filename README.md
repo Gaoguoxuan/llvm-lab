@@ -5,24 +5,23 @@
 - `AddToMul`：将整数 `add` 和浮点数 `fadd` 指令替换为对应的乘法指令。
 - `CFG`：输出函数控制流图中基本块之间的边。
 
-> `AddToMul` 是学习性质的变换，会改变程序语义，不应作为实际优化使用。
 
 ## 环境要求
 
-- LLVM 14（`clang`、`opt` 和用于构建插件的 LLVM 必须为同一版本）
+- LLVM 18（`clang`、`opt` 和用于构建插件的 LLVM 必须为同一版本）
 - CMake 3.20+
 - 支持 C++17 的编译器
 
-如果 CMake 无法自动找到 LLVM，可通过 `-DLLVM_DIR=$(llvm-config --cmakedir)` 指定其位置。
+如果 CMake 无法自动找到 LLVM 18，可通过 `-DLLVM_DIR=$(llvm-config-18 --cmakedir)` 指定其位置。
 
 ## 构建与运行 AddToMul
 
 ```bash
 cmake -S AddToMul -B AddToMul/build \
-  -DLLVM_DIR=$(llvm-config --cmakedir)
+  -DLLVM_DIR=$(llvm-config-18 --cmakedir)
 cmake --build AddToMul/build
 
-opt-14 -load-pass-plugin=AddToMul/build/AddToMulPlugin.so \
+opt-18 -load-pass-plugin=AddToMul/build/AddToMulPlugin.so \
   -passes=add-to-mul -S AddToMul/test.ll -o AddToMul/output.ll
 ```
 
@@ -30,12 +29,12 @@ opt-14 -load-pass-plugin=AddToMul/build/AddToMulPlugin.so \
 
 ```bash
 cmake -S CFG -B CFG/build \
-  -DLLVM_DIR=$(llvm-config --cmakedir)
+  -DLLVM_DIR=$(llvm-config-18 --cmakedir)
 cmake --build CFG/build
 
-clang-14 -S -emit-llvm -O0 \
+clang-18 -S -emit-llvm -O0 \
   -Xclang -disable-O0-optnone CFG/cfg_test.c -o CFG/cfg_test.ll
-opt-14 -load-pass-plugin=CFG/build/CFGPlugin.so \
+opt-18 -load-pass-plugin=CFG/build/CFGPlugin.so \
   -passes=prt-cfg -disable-output CFG/cfg_test.ll
 ```
 

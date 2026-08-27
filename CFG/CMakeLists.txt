@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(LLVM REQUIRED CONFIG)
+if(NOT LLVM_PACKAGE_VERSION MATCHES "^18\\.")
+    message(FATAL_ERROR "LLVM 18 is required, but found ${LLVM_PACKAGE_VERSION}")
+endif()
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "LLVM_DIR = ${LLVM_DIR}")
 message(STATUS "LLVM include dirs = ${LLVM_INCLUDE_DIRS}")
@@ -32,4 +35,3 @@ add_llvm_pass_plugin(
 
 # 去掉.so文件的lib前缀
 set_target_properties(CFGPlugin PROPERTIES PREFIX "")
-
