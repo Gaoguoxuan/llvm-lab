@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 3.20)
+project(MyLLVMPasses)
+
+# 设置C++标准（LLVM18对应的C++17）
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(LLVM REQUIRED CONFIG)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "LLVM_DIR = ${LLVM_DIR}")
+message(STATUS "LLVM include dirs = ${LLVM_INCLUDE_DIRS}")
+
+# 添加LLVM头文件路径以及宏定义
+add_definitions(${LLVM_DEFINITIONS})
+include_directories(${LLVM_INCLUDE_DIRS})
+
+# 导入LLVM构建辅助函数
+list(APPEND CMAKE_MODULE_PATH ${LLVM_CMAKE_DIR})
+include(AddLLVM)
+
+set(LLVM_OPTIONAL_SOURCES cfg_test.c)
+
+# 构建Pass，生成.so文件并链接LLVM库
+
+# =============================
+# Pass 2: CFG
+# =============================
+add_llvm_pass_plugin(
+    CFGPlugin
+    CFGPass.cpp
+)
+
+# 去掉.so文件的lib前缀
+set_target_properties(CFGPlugin PROPERTIES PREFIX "")
+
